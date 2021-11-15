@@ -4,6 +4,8 @@
 *.jpeg
 *.mp4
 *.wav
+*.npy
+*.np
 *.pkl
 
 # Byte-compiled / optimized / DLL files
