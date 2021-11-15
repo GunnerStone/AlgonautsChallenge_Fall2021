@@ -54,13 +54,13 @@ def sigmoid(x):
     return 1./(1+np.exp(np.array(-1.*x)))
 
 
-def forwardAll(model, args):
+def forwardAll(model, args, video_name):
     test_root = cfg.config_test[args.dataset]['data_root']
 
     if(args.inputDir is not None):
       test_root = args.inputDir
 
-    logging.info('Processing: %s' % test_root)
+    # logging.info('Processing: %s' % test_root)
     test_lst = cfg.config_test[args.dataset]['data_lst']
 
     imageFileNames = createDataList(test_root, test_lst)
@@ -72,7 +72,9 @@ def forwardAll(model, args):
     # print(len(testloader), len(nm))
     # assert len(testloader) == len(nm)
     # save_res = True
-    save_dir = join(test_root, args.res_dir)
+    #print video name
+    
+    save_dir = 'AlgonautsVideos268_Preprocessed/{}/BDCN/'.format(video_name)
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
@@ -84,8 +86,8 @@ def forwardAll(model, args):
     # iter_per_epoch = len(testloader)
     start_time = time.time()
     all_t = 0
-    timeRecords = open(join(save_dir, 'timeRecords.txt'), "w")
-    timeRecords.write('# filename time[ms]\n')
+    # timeRecords = open(join(save_dir, 'timeRecords.txt'), "w")
+    # timeRecords.write('# filename time[ms]\n')
 
     for i, (data, _) in enumerate(testloader):
         if args.cuda:
@@ -99,28 +101,33 @@ def forwardAll(model, args):
                 fuse = torch.sigmoid(out[-1]).cpu().data.numpy()[0, 0, :, :]
 
                 elapsedTime = time.time() - tm
-                timeRecords.write('%s %f\n'%(imageFileNames[i], elapsedTime * 1000))
+                # timeRecords.write('%s %f\n'%(imageFileNames[i], elapsedTime * 1000))
 
                 cv2.imwrite(os.path.join(save_dir, '%s' % imageFileNames[i]), fuse*255)
 
                 all_t += time.time() - tm
 
-    timeRecords.close()
-    print(all_t)
-    print('Overall Time use: ', time.time() - start_time)
+    # timeRecords.close()
+    # print(all_t)
+    # print('Overall Time use: ', time.time() - start_time)
 
 
-def main():
+def inference(video_path):
+    #get video name
+    video_name = video_path.split('/')[-1]
+    #get video name without extension
+    video_name = video_name.split('.')[0]
+
     args = parse_args()
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-    logging.info('Loading model...')
+    # logging.info('Loading model...')
     model = bdcn.BDCN()
-    logging.info('Loading state...')
+    # logging.info('Loading state...')
     model.load_state_dict(torch.load('%s' % (args.model)))
-    logging.info('Start image processing...')
+    # logging.info('Start image processing...')
 
     inputDirs = [
-        'demo_frames/'
+        'AlgonautsVideos268_Preprocessed/{}/RAW/'.format(video_name),
         #'/run/user/1000/gvfs/smb-share:server=192.168.0.253,share=data/Master/datasets/bsr_bsds500/BSR/BSDS500/data/images/test_png/'
         #'/run/user/1000/gvfs/smb-share:server=192.168.0.253,share=data/Master/datasets/test_dataset/hdr_fusion/flicker_synthetic/flicker_1'
         ]
@@ -153,7 +160,7 @@ def main():
     for inputDir in inputDirs:
       args.inputDir = inputDir
       args.cuda = True      
-      forwardAll(model, args)
+      forwardAll(model, args, video_name)
 
 
 def parse_args():
@@ -170,4 +177,4 @@ def parse_args():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)s:\t%(message)s', level=logging.INFO)
-    main()
+    inference('testvid.mp4')

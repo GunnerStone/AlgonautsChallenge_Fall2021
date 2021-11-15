@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 import librosa
 import librosa.display
+import cv2
 
 
 def Mp4ToWav(file_path):
@@ -18,13 +19,13 @@ def Mp4ToWav(file_path):
     ipd.Audio(file_path)
     file_name = file_path.split('/')[-1]
     file_name = file_name.split('.')[0]
-    file_name = file_name + '.wav'
-    if os.path.isfile(file_name):
-        return file_name
+    output_file_path = 'AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]+'/WAV/' + file_name + '.wav'
+    if os.path.isfile(output_file_path):
+        return output_file_path
     else:
         #use ffmpeg to make a wav file with 1 mono
-        os.system('ffmpeg -i ' + file_path + ' -ac 1 ' + file_name)
-    return file_name
+        os.system('ffmpeg -i ' + file_path + ' -ac 1 ' + output_file_path)
+    return output_file_path
 
 
 def createMFCC(file_path):
@@ -32,56 +33,82 @@ def createMFCC(file_path):
     Creates MFCC features from wav file
     """
     file_name = Mp4ToWav(file_path)
+    # print("output wav file: "+str(file_name))
     sampling_rate, signal = wavfile.read(file_name)
-    print(sampling_rate)
+    #print(sampling_rate)
     signal = signal.astype(float)
     signal = signal / np.max(np.abs(signal))
     mfcc = librosa.feature.mfcc(y=signal, sr=sampling_rate, n_mfcc=13)
     return mfcc
 
-def main():
-    file_path = "testvid.mp4"
+def inference(video_path):
+    file_path = video_path
     file_name = file_path.split('/')[-1]
     file_name = file_name.split('.')[0]
     file_name = file_name + '.wav'
+
+    #create folders if they doesn't exist
+    if not os.path.exists('./AlgonautsVideos268_Preprocessed'):
+        os.makedirs('./AlgonautsVideos268_Preprocessed')
+    if not os.path.exists('./AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]):
+        os.makedirs('./AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0])
+    if not os.path.exists('./AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]+'/MFCC'):
+        os.makedirs('./AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]+'/MFCC')
+    if not os.path.exists('./AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]+'/WAV'):
+        os.makedirs('./AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]+'/WAV')
+
     mfccs = createMFCC(file_path)
-    sr, signal = wavfile.read(file_name)
-    plt.figure(figsize=(12,5))
-    librosa.display.specshow(mfccs,
-                            x_axis='time',
-                            y_axis='mel',
-                            sr=sr,)
-    plt.colorbar(format='%+2.0f dB')
-    plt.title('MFCC')
-    plt.tight_layout()
-    plt.show()
+    output_file_path = 'AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]+'/WAV/' + file_name
+
+    sr, signal = wavfile.read(output_file_path)
+    # plt.figure(figsize=(12,5))
+    # librosa.display.specshow(mfccs,
+    #                         x_axis='time',
+    #                         y_axis='mel',
+    #                         sr=sr,)
+    # plt.colorbar(format='%+2.0f dB')
+    # plt.title('MFCC')
+    # plt.tight_layout()
+    # plt.show()
 
     #calculate delta and delta2 MFCCs
     mfcc_delta = librosa.feature.delta(mfccs)
     mfcc_delta2 = librosa.feature.delta(mfccs, order=2)
 
     #visualize MFCCS
-    plt.figure(figsize=(12,5))
-    librosa.display.specshow(mfcc_delta,
-                            x_axis='time',
-                            y_axis='mel',
-                            sr=sr,)
-    plt.colorbar(format='%+2.0f dB')
-    plt.title('$\Delta_{1}$ MFCC')
-    plt.tight_layout()
-    plt.show()
+    # plt.figure(figsize=(12,5))
+    # librosa.display.specshow(mfcc_delta,
+    #                         x_axis='time',
+    #                         y_axis='mel',
+    #                         sr=sr,)
+    # plt.colorbar(format='%+2.0f dB')
+    # plt.title('$\Delta_{1}$ MFCC')
+    # plt.tight_layout()
+    # plt.show()
 
-    plt.figure(figsize=(12,5))
-    librosa.display.specshow(mfcc_delta2,
-                            x_axis='time',
-                            y_axis='mel',
-                            sr=sr,)
-    plt.colorbar(format='%+2.0f dB')
-    plt.title('$\Delta_{2}$ MFCC')
-    plt.tight_layout()
-    plt.show()
+    # plt.figure(figsize=(12,5))
+    # librosa.display.specshow(mfcc_delta2,
+    #                         x_axis='time',
+    #                         y_axis='mel',
+    #                         sr=sr,)
+    # plt.colorbar(format='%+2.0f dB')
+    # plt.title('$\Delta_{2}$ MFCC')
+    # plt.tight_layout()
+    # plt.show()
 
-    comprehensive_mfccs = np.concatenate(mfccs, mfcc_delta, mfcc_delta2)
+    #create a concatenation of mfccs
+    mfcc_concat = np.concatenate((mfccs, mfcc_delta, mfcc_delta2), axis=0)
+    
+    #print out shapes of all mfccs
+    # print("MFCC shape: ", mfccs.shape)
+    # print("MFCC delta shape: ", mfcc_delta.shape)
+    # print("MFCC delta2 shape: ", mfcc_delta2.shape)
+    # print("MFCC concat shape: ", mfcc_concat.shape)
+
+    #save mfcc concat to repective file in AlgonautsVideos268_Preprocessed folder
+    
+    np.save('./AlgonautsVideos268_Preprocessed/'+ file_name.split('.')[0]+'/MFCC/'+'MFCC.npy', mfcc_concat)
+
 
 if __name__ == "__main__":
-    main()
+    inference("testvid.mp4")
