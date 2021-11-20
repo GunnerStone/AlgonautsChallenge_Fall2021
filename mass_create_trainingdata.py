@@ -46,6 +46,7 @@ def create_trainingdata():
             if not os.path.exists("Gunners_training_data/"+str(roi)+"/"+technique):
                 os.makedirs("Gunners_training_data/"+str(roi)+"/"+technique)
 
+
     training_data = []
 
     # create training data for each ROI and technique
