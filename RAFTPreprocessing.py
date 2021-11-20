@@ -38,12 +38,12 @@ def vizualize_flow(img, flo, save, counter, args):
 
     if save:
         # print("Saving RAW & RAFT frames")
-        print("video name: "+str(video_name))
+        # print("video name: "+str(video_name))
         cv2.imwrite("AlgonautsVideos268_Preprocessed/"+str(base_name)+f"/RAW/frame_{str(counter)}.png", img)
         cv2.imwrite("AlgonautsVideos268_Preprocessed/"+str(base_name)+f"/RAFT/frame_{str(counter)}.png", img_flo)
         #print out full directory of where we just saved the image
-        print(f"AlgonautsVideos268_Preprocessed/{base_name}/RAW/frame_{str(counter)}.png")
-        print(f"AlgonautsVideos268_Preprocessed/{base_name}/RAFT/frame_{str(counter)}.png")
+        # print(f"AlgonautsVideos268_Preprocessed/{base_name}/RAW/frame_{str(counter)}.png")
+        # print(f"AlgonautsVideos268_Preprocessed/{base_name}/RAFT/frame_{str(counter)}.png")
     # cv2.imshow("Optical Flow", img_flo / 255.0)
     # k = cv2.waitKey(25) & 0xFF
     # if k == 27:
@@ -71,7 +71,7 @@ def inference(args):
     base_name = os.path.basename(args.video)
     #get the name of the video without the extension
     base_name = base_name.split('.')[0]
-    print (base_name)
+    # print (base_name)
 
     save = args.save
     if save:
@@ -103,7 +103,7 @@ def inference(args):
 
     video_path = args.video
     # print the path to video
-    print(video_path)
+    # print(video_path)
     # capture the video and get the first frame
     cap = cv2.VideoCapture(video_path)
     ret, frame_1 = cap.read()

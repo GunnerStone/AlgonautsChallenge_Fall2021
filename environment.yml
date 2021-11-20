@@ -1,4 +1,4 @@
-name: treely
+name: algo
 channels:
   - pytorch
   - numba
@@ -210,4 +210,4 @@ dependencies:
     - websocket-client==1.2.1
     - winkerberos==0.8.0
     - wrapt==1.13.3
-prefix: C:\ProgramData\Anaconda3\envs\treely
+prefix: C:\ProgramData\Anaconda3\envs\algo
