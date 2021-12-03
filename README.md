@@ -2,7 +2,7 @@
 ## How the Human Brain Makes Sense of a World in Motion
 
 <p align="center">
-  <img src="doc/challenge_overview.png" />
+  <img src="https://raw.githubusercontent.com/michal-nahlik/algonauts-vid2fmri-2021/master/doc/challenge_overview.png" />
   <br><span>(source: http://algonauts.csail.mit.edu/challenge.html)</span>
 </p>
 
@@ -16,7 +16,7 @@ This solution has not been submitted for official testing on the Algonauts websi
 Data preprocessing: 
 - Remove all videos that don't contain audio
 - Remove all videos that don't contain at least 75 frames
-- Videos resampled to 75 Frames and resided to 32*32 pixels
+- Videos resampled to 75 Frames and resized to 32*32 pixels
 - Preprocessed Inputs: BDCN edge detector, RAFT motion energy model, MFCC audio encoding
 
 Training:
