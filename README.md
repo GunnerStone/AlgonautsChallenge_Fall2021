@@ -17,7 +17,7 @@ Data preprocessing:
 - Remove all videos that don't contain audio
 - Remove all videos that don't contain at least 75 frames
 - Videos resampled to 75 Frames and resized to 32*32 pixels
-- Preprocessed Inputs: BDCN edge detector, RAFT motion energy model, MFCC audio encoding
+- Preprocessed Inputs: RAW unprocessed footage, RAFT motion energy model, BDCN edge detector, MFCC audio encoding
 
 Training:
 - Train a regression model for each preprocessed input
